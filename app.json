@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "API trying",
-    "slug": "testApi",
+    "name": "My Movies",
+    "slug": "MyMovies",
     "privacy": "public",
     "sdkVersion": "32.0.0",
     "platforms": [
@@ -23,7 +23,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    }
+      "supportsTablet": true,
+      "bundleIdentifier": "com.test.MyMovies"
+    },
+    "android": {
+      "package": "com.test.MyMovies"
+    },
+    "description": ""
   }
 }

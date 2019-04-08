@@ -4,6 +4,9 @@ import { createStackNavigator, createAppContainer,createBottomTabNavigator } fro
 import Search from '../Components/Search'
 import FilmDetail from '../Components/FilmDetail'
 import Favorites from '../Components/Favorites'
+import News from '../Components/News'
+import Test from '../Notification/Test'
+import { Ionicons } from '@expo/vector-icons';
 
 const SearchStackNavigator = createStackNavigator({
   Search: { // Nom utilisé pour appeler cette vue (peut être différente)
@@ -29,6 +32,27 @@ const FavoritesStackNavigator = createStackNavigator({
   }
 })
 
+const NewsStackNavigator = createStackNavigator({
+  News: {
+    screen: News,
+    navigationOptions: {
+      title: 'Les Derniers Films',
+    },
+  },
+  FilmDetail: {
+    screen: FilmDetail,
+  }
+})
+
+const NotificationStackNavigator = createStackNavigator({
+  Notification: { // Nom utilisé pour appeler cette vue (peut être différente)
+    screen: Test,
+    navigationOptions: {
+      title: 'Notification'
+    }
+  }
+})
+
 const MoviesTabNavigator = createBottomTabNavigator({
   Search: {
     screen: SearchStackNavigator,
@@ -47,10 +71,28 @@ const MoviesTabNavigator = createBottomTabNavigator({
         return <Image
           source={require('../assets/ic_favorite.png')}
           style={styles.icon}/>
+        }
+      }
+    },
+    News: {
+      screen: NewsStackNavigator,
+      navigationOptions: {
+        tabBarIcon: () => {
+          return <Image
+            source={require('../assets/ic_fiber_new.png')}
+            style={styles.icon}/>
+        }
+      }
+    },
+    Notification: {
+      screen: NotificationStackNavigator,
+      navigationOptions: {
+        tabBarIcon: () => {
+          return <Ionicons name="md-notifications" size={30} color="black" />
+        }
       }
     }
-  }
-},
+  },
 {
   tabBarOptions: {
     activeBackgroundColor: '#DDDDDD', // Couleur d'arrière-plan de l'onglet sélectionné

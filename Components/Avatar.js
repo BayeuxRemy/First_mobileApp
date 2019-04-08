@@ -1,43 +1,81 @@
 import React from 'react'
-import { StyleSheet, Image, TouchableOpacity } from 'react-native'
-import ImagePicker from 'react-native-image-picker'
+import { StyleSheet, Image, TouchableOpacity, View } from 'react-native'
+import { ImagePicker, Permissions } from 'expo';
+import { connect } from 'react-redux'
+import { Ionicons } from '@expo/vector-icons';
 
 class Avatar extends React.Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      avatar: require('../assets/ic_tag_faces.png')
+      default: require('../assets/ic_tag_faces.png'),
+      avatar: null
     }
     this._avatarClicked = this._avatarClicked.bind(this)
   }
 
-  _avatarClicked() {
-      alert('In developpement. Error with link libraries');
-    /*ImagePicker.showImagePicker({}, (response) => {
-        if (response.didCancel) {
-          console.log('L\'utilisateur a annulé')
-        }
-        else if (response.error) {
-          console.log('Erreur : ', response.error)
-        }
-        else {
-          console.log('Photo : ', response.uri )
-          let requireSource = { uri: response.uri }
-          this.setState({
-            avatar: requireSource
-          })
-        }
-      })*/
+  _cameraClicked = async() => {
+
+    const { status } = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
+
+    if (status == 'granted') {
+
+      const { cancelled, uri } = await ImagePicker.launchCameraAsync({});
+
+      if (!cancelled) {
+          const action = { type: "SET_AVATAR", uri }
+          this.props.dispatch(action)
+      }
+    }
+    else
+    {
+       alert('Persmission d\'accées à la caméra non accordée')
+       this._avatarClicked();
+    }
+
   }
+  _avatarClicked = async() => {
+    
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+    });
+    //console.log(result);
+    if (!result.cancelled) {
+      const action = { type: "SET_AVATAR", value: result.uri }
+      this.props.dispatch(action)
+    } 
+     
+  }
+  
+    _defaultAvatar(image) {
+
+      if(image == null || image == 2)
+      { 
+        return ( <Image style={styles.avatar} source={this.state.default} /> )
+      }
+      else
+      {
+        return ( <Image style={styles.avatar} source={{ uri : image }} /> )
+      }
+
+    }
 
   render() {
+    let  { avatar } = this.props 
+    //alert(avatar)
     return(
-      <TouchableOpacity
-        style={styles.touchableOpacity}
-        onPress={this._avatarClicked}>
-          <Image style={styles.avatar} source={this.state.avatar} />
-      </TouchableOpacity>
+      <View >
+        <TouchableOpacity
+          style={styles.touchableOpacity}
+          onPress={this._avatarClicked}>
+          {this._defaultAvatar(avatar)}
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this._cameraClicked}>
+          <Ionicons name="md-camera" size={35} color="black" />
+        </TouchableOpacity>
+      </View>
     )
   }
 }
@@ -59,4 +97,11 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Avatar
+// On mappe l'avatar aux props de notre component
+const mapStateToProps = state => {
+  return {
+    avatar: state.setAvatar.avatar
+  }
+}
+
+export default connect(mapStateToProps)(Avatar)
